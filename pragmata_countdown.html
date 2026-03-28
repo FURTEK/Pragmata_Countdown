@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pragmata — Countdown</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0c10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Share Tech Mono', monospace;
+      color: #c8e6ff;
+    }
+
+    .pg-wrap {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pg-scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .pg-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .pg-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: #4a7fa0;
+      text-transform: uppercase;
+    }
+
+    .pg-title {
+      font-size: clamp(2.5rem, 10vw, 5rem);
+      font-family: 'Share Tech Mono', monospace;
+      color: #e8f4ff;
+      letter-spacing: 0.12em;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .pg-title span { color: #3a9fd8; }
+
+    .pg-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #1e4a6a, transparent);
+    }
+
+    .pg-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .pg-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pg-box {
+      background: #050810;
+      border: 1px solid #1a3a52;
+      border-radius: 4px;
+      width: 100%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pg-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #3a9fd8, transparent);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    /* digit layer stack */
+    .pg-num-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .pg-num {
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      font-family: 'Share Tech Mono', monospace;
+      color: #3a9fd8;
+      line-height: 1;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      position: relative;
+      z-index: 3;
+      display: block;
+      text-align: center;
+      width: 100%;
+      text-shadow: 0 0 8px rgba(58,159,216,0.4), 0 0 20px rgba(58,159,216,0.15);
+    }
+
+    /* chromatic ghost layers — sit behind main digit */
+    .pg-ch-red,
+    .pg-ch-cyan {
+      position: absolute;
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      line-height: 1;
+      width: 100%;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .pg-ch-red  {
+      color: #ff3c50;
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+
+    .pg-ch-cyan {
+      color: #00dcff;
+      z-index: 2;
+      mix-blend-mode: screen;
+    }
+
+    /* on-change animation for the main digit */
+    @keyframes digitChange {
+      0%   { opacity: 1;   color: #3a9fd8; text-shadow: 0 0 8px rgba(58,159,216,0.4), 0 0 20px rgba(58,159,216,0.15); }
+      20%  { opacity: 0.7; color: #7ad4f8; text-shadow: 0 0 14px rgba(122,212,248,0.6); }
+      50%  { opacity: 0.5; color: #a8e8ff; text-shadow: 0 0 18px rgba(168,232,255,0.5); }
+      80%  { opacity: 0.8; color: #5cc4f0; text-shadow: 0 0 10px rgba(92,196,240,0.4); }
+      100% { opacity: 1;   color: #3a9fd8; text-shadow: 0 0 8px rgba(58,159,216,0.4), 0 0 20px rgba(58,159,216,0.15); }
+    }
+
+    /* red ghost: drifts left, fades in then out */
+    @keyframes chromaticRed {
+      0%   { opacity: 0;    transform: translateY(-50%) translateX(0px); }
+      15%  { opacity: 0.28; transform: translateY(-50%) translateX(-3px); }
+      40%  { opacity: 0.18; transform: translateY(-50%) translateX(-4.5px); }
+      70%  { opacity: 0.12; transform: translateY(-50%) translateX(-3px); }
+      100% { opacity: 0;    transform: translateY(-50%) translateX(0px); }
+    }
+
+    /* cyan ghost: drifts right */
+    @keyframes chromaticCyan {
+      0%   { opacity: 0;    transform: translateY(-50%) translateX(0px); }
+      15%  { opacity: 0.22; transform: translateY(-50%) translateX(3px); }
+      40%  { opacity: 0.14; transform: translateY(-50%) translateX(4.5px); }
+      70%  { opacity: 0.1;  transform: translateY(-50%) translateX(3px); }
+      100% { opacity: 0;    transform: translateY(-50%) translateX(0px); }
+    }
+
+    /* ambient flicker — just brightness, no ghosts */
+    @keyframes ambientFlicker {
+      0%   { opacity: 1;    filter: none; }
+      20%  { opacity: 0.6;  filter: brightness(1.5); }
+      40%  { opacity: 0.9;  filter: none; }
+      60%  { opacity: 0.7;  filter: brightness(1.3); }
+      80%  { opacity: 0.85; filter: none; }
+      100% { opacity: 1;    filter: none; }
+    }
+
+    .pg-label {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: #4a7fa0;
+      text-transform: uppercase;
+    }
+
+    .pg-subtext {
+      font-size: 12px;
+      color: #4a7fa0;
+      letter-spacing: 0.15em;
+      text-align: center;
+    }
+
+    .pg-subtext b { color: #7ab8d8; font-weight: 400; }
+
+    .pg-blink { animation: blink 1.4s step-end infinite; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    .pg-launched {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      color: #3a9fd8;
+      letter-spacing: 0.15em;
+      text-align: center;
+      text-shadow: 0 0 30px rgba(58,159,216,0.5);
+      grid-column: 1 / -1;
+    }
+
+    .pg-star { position: absolute; background: #c8e6ff; border-radius: 50%; }
+
+    @media (max-width: 480px) { .pg-grid { gap: 0.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="pg-wrap" id="pgWrap">
+    <div class="pg-scanlines"></div>
+    <div class="pg-inner">
+      <div class="pg-eyebrow">Capcom &mdash; 2026</div>
+      <div class="pg-title">PRAG<span>MATA</span></div>
+      <div class="pg-divider"></div>
+      <div class="pg-grid" id="pgGrid">
+        <div class="pg-unit">
+          <div class="pg-box">
+            <div class="pg-num-wrap">
+              <div class="pg-ch-red"  id="chr-d"></div>
+              <div class="pg-ch-cyan" id="chc-d"></div>
+              <div class="pg-num" id="cDays">00</div>
+            </div>
+          </div>
+          <div class="pg-label">Days</div>
+        </div>
+        <div class="pg-unit">
+          <div class="pg-box">
+            <div class="pg-num-wrap">
+              <div class="pg-ch-red"  id="chr-h"></div>
+              <div class="pg-ch-cyan" id="chc-h"></div>
+              <div class="pg-num" id="cHrs">00</div>
+            </div>
+          </div>
+          <div class="pg-label">Hours</div>
+        </div>
+        <div class="pg-unit">
+          <div class="pg-box">
+            <div class="pg-num-wrap">
+              <div class="pg-ch-red"  id="chr-m"></div>
+              <div class="pg-ch-cyan" id="chc-m"></div>
+              <div class="pg-num" id="cMin">00</div>
+            </div>
+          </div>
+          <div class="pg-label">Minutes</div>
+        </div>
+        <div class="pg-unit">
+          <div class="pg-box">
+            <div class="pg-num-wrap">
+              <div class="pg-ch-red"  id="chr-s"></div>
+              <div class="pg-ch-cyan" id="chc-s"></div>
+              <div class="pg-num" id="cSec">00</div>
+            </div>
+          </div>
+          <div class="pg-label">Seconds</div>
+        </div>
+      </div>
+      <div class="pg-subtext" id="pgSub">
+        Launch<span class="pg-blink">_</span> &nbsp;&mdash;&nbsp; <b>April 17, 2026</b> &nbsp;&mdash;&nbsp; PS5 / Xbox Series / Switch 2 / PC
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const launch = new Date('2026-04-17T00:00:00');
+      const prev   = { d: null, h: null, m: null, s: null };
+      const busy   = { d: false, h: false, m: false, s: false };
+
+      const elIds  = { d:'cDays', h:'cHrs',  m:'cMin',  s:'cSec'  };
+      const chrIds = { d:'chr-d', h:'chr-h', m:'chr-m', s:'chr-s' };
+      const chcIds = { d:'chc-d', h:'chc-h', m:'chc-m', s:'chc-s' };
+      const keys   = ['d','h','m','s'];
+
+      function pad(n) { return String(Math.floor(n)).padStart(2, '0'); }
+
+      function reflow(el) { void el.offsetWidth; }
+
+      function addStars() {
+        const wrap = document.getElementById('pgWrap');
+        for (let i = 0; i < 60; i++) {
+          const s = document.createElement('div');
+          s.className = 'pg-star';
+          const sz = Math.random() * 1.8 + 0.4;
+          s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;opacity:${Math.random()*0.35+0.05};`;
+          wrap.appendChild(s);
+        }
+      }
+
+      function onDigitChange(key, val) {
+        if (busy[key]) return;
+        busy[key] = true;
+
+        const el  = document.getElementById(elIds[key]);
+        const chr = document.getElementById(chrIds[key]);
+        const chc = document.getElementById(chcIds[key]);
+        const dur = 340 + Math.random() * 80;
+
+        /* update ghost text to new value */
+        chr.textContent = val;
+        chc.textContent = val;
+
+        /* reset then fire animations */
+        el.style.animation  = '';
+        chr.style.animation = '';
+        chc.style.animation = '';
+        reflow(el);
+
+        /* slight delay before text swaps so ghosts lead slightly */
+        setTimeout(() => { el.textContent = val; }, dur * 0.45);
+
+        el.style.animation  = `digitChange ${dur}ms ease-in-out`;
+        chr.style.animation = `chromaticRed ${dur}ms ease-in-out`;
+        chc.style.animation = `chromaticCyan ${dur}ms ease-in-out`;
+
+        setTimeout(() => {
+          el.style.animation  = '';
+          chr.style.animation = '';
+          chc.style.animation = '';
+          el.textContent = val;
+          busy[key] = false;
+        }, dur + 30);
+      }
+
+      /* ambient flicker: just the main digit, no ghosts */
+      function ambientFlicker() {
+        const k = keys[Math.floor(Math.random() * keys.length)];
+        if (busy[k] || prev[k] === null) return;
+        const el  = document.getElementById(elIds[k]);
+        const dur = 100 + Math.random() * 120;
+        el.style.animation = '';
+        reflow(el);
+        el.style.animation = `ambientFlicker ${dur}ms ease-in-out`;
+        setTimeout(() => { el.style.animation = ''; }, dur + 20);
+      }
+
+      function scheduleNext() {
+        const delay = 5000 + Math.random() * 9000;
+        setTimeout(() => { ambientFlicker(); scheduleNext(); }, delay);
+      }
+
+      function tick() {
+        const now  = new Date();
+        const diff = launch - now;
+
+        if (diff <= 0) {
+          document.getElementById('pgGrid').innerHTML =
+            '<div class="pg-launched">MISSION ACTIVE<span class="pg-blink">_</span></div>';
+          document.getElementById('pgSub').textContent = 'Pragmata is out now.';
+          return;
+        }
+
+        const vals = {
+          d: pad(Math.floor(diff / 86400000)),
+          h: pad(Math.floor((diff % 86400000) / 3600000)),
+          m: pad(Math.floor((diff % 3600000) / 60000)),
+          s: pad(Math.floor((diff % 60000) / 1000))
+        };
+
+        for (const k of keys) {
+          if (prev[k] !== vals[k]) {
+            const first = prev[k] === null;
+            prev[k] = vals[k];
+            if (first) {
+              document.getElementById(elIds[k]).textContent = vals[k];
+            } else {
+              onDigitChange(k, vals[k]);
+            }
+          }
+        }
+      }
+
+      addStars();
+      tick();
+      setInterval(tick, 1000);
+      scheduleNext();
+    })();
+  </script>
+</body>
+</html>
