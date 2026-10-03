@@ -15,23 +15,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       font-family: 'Share Tech Mono', monospace;
       color: #c8e6ff;
     }
 
-    .pg-wrap {
-      width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2.5rem 1rem 1rem;
-      position: relative;
-      overflow: hidden;
-    }
-
+    /* ── scanlines ── */
     .pg-scanlines {
       position: fixed;
       inset: 0;
@@ -41,6 +29,17 @@
       );
       pointer-events: none;
       z-index: 1;
+    }
+
+    /* ── main wrap ── */
+    .pg-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1rem 0;
+      position: relative;
+      overflow: hidden;
     }
 
     .pg-inner {
@@ -63,7 +62,6 @@
 
     .pg-title {
       font-size: clamp(2.5rem, 10vw, 5rem);
-      font-family: 'Share Tech Mono', monospace;
       color: #e8f4ff;
       letter-spacing: 0.12em;
       text-align: center;
@@ -72,7 +70,6 @@
 
     .pg-title span { color: #3a9fd8; }
 
-    /* live badge */
     .pg-live-badge {
       display: flex;
       align-items: center;
@@ -84,8 +81,7 @@
     }
 
     .pg-live-dot {
-      width: 7px;
-      height: 7px;
+      width: 7px; height: 7px;
       border-radius: 50%;
       background: #3a9fd8;
       box-shadow: 0 0 8px rgba(58,159,216,0.8);
@@ -103,7 +99,7 @@
       background: linear-gradient(90deg, transparent, #1e4a6a, transparent);
     }
 
-    /* since-launch label */
+    /* ── counter ── */
     .pg-since-label {
       font-size: 11px;
       letter-spacing: 0.28em;
@@ -111,7 +107,6 @@
       text-transform: uppercase;
     }
 
-    /* counter grid */
     .pg-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -160,8 +155,6 @@
 
     .pg-num {
       font-size: clamp(2.5rem, 7vw, 4.5rem);
-      font-family: 'Share Tech Mono', monospace;
-      /* slightly dimmer than the countdown — it's elapsed, not anticipation */
       color: #2e7a9a;
       line-height: 1;
       font-weight: 400;
@@ -174,11 +167,9 @@
       text-shadow: 0 0 8px rgba(46,122,154,0.4), 0 0 20px rgba(46,122,154,0.15);
     }
 
-    .pg-ch-red,
-    .pg-ch-cyan {
+    .pg-ch-red, .pg-ch-cyan {
       position: absolute;
       font-size: clamp(2.5rem, 7vw, 4.5rem);
-      font-family: 'Share Tech Mono', monospace;
       font-weight: 400;
       letter-spacing: 0.05em;
       line-height: 1;
@@ -232,6 +223,15 @@
       text-transform: uppercase;
     }
 
+    .pg-subtext {
+      font-size: 12px;
+      color: #2e4a5a;
+      letter-spacing: 0.15em;
+      text-align: center;
+    }
+
+    .pg-subtext b { color: #3a6a7a; font-weight: 400; }
+
     /* ── store links ── */
     .pg-stores-label {
       font-size: 11px;
@@ -263,7 +263,6 @@
       align-items: center;
       gap: 8px;
       transition: color 0.15s, border-color 0.15s, background 0.15s;
-      cursor: pointer;
     }
 
     .pg-store-btn:hover {
@@ -272,26 +271,191 @@
       background: rgba(58,159,216,0.08);
     }
 
-    .pg-store-btn .pg-store-icon {
-      font-size: 13px;
-      line-height: 1;
+    /* ── twitch section ── */
+    .pg-streams-section {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
     }
 
-    .pg-subtext {
-      font-size: 12px;
-      color: #2e4a5a;
+    .pg-streams-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .pg-streams-label {
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      color: #2e5a70;
+      text-transform: uppercase;
+    }
+
+    /* channel pill controls */
+    .pg-channel-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .pg-ch-pill {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      padding: 5px 12px;
+      border: 1px solid #1e4a6a;
+      border-radius: 12px;
+      background: transparent;
+      color: #4a7fa0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    .pg-ch-pill:hover    { color: #7ab8d8; border-color: #2e6a8a; }
+    .pg-ch-pill.active   { color: #3a9fd8; border-color: #3a9fd8; background: rgba(58,159,216,0.07); }
+
+    .pg-ch-pill .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.5;
+    }
+
+    .pg-ch-pill.active .dot { opacity: 1; animation: dotPulse 2s ease-in-out infinite; }
+
+    /* add channel input */
+    .pg-add-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pg-ch-input {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      background: #050810;
+      border: 1px solid #1e4a6a;
+      border-radius: 3px;
+      color: #c8e6ff;
+      padding: 5px 10px;
+      outline: none;
+      width: 160px;
+      transition: border-color 0.15s;
+    }
+
+    .pg-ch-input::placeholder { color: #2e5a70; }
+    .pg-ch-input:focus { border-color: #3a9fd8; }
+
+    .pg-add-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
       letter-spacing: 0.15em;
-      text-align: center;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border: 1px solid #1e4a6a;
+      border-radius: 3px;
+      background: transparent;
+      color: #4a7fa0;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
     }
 
-    .pg-subtext b { color: #3a6a7a; font-weight: 400; }
+    .pg-add-btn:hover { color: #3a9fd8; border-color: #3a9fd8; }
+
+    /* stream grid */
+    .pg-stream-grid {
+      display: grid;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .pg-stream-grid.cols-1 { grid-template-columns: 1fr; }
+    .pg-stream-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .pg-stream-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .pg-stream-tile {
+      position: relative;
+      background: #050810;
+      border: 1px solid #1a3a52;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* 16:9 ratio wrapper */
+    .pg-stream-ratio {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+    }
+
+    .pg-stream-ratio iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .pg-stream-close {
+      position: absolute;
+      top: 6px; right: 6px;
+      z-index: 10;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgba(5,8,16,0.8);
+      border: 1px solid #1e4a6a;
+      color: #4a7fa0;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .pg-stream-close:hover { color: #c8e6ff; border-color: #3a9fd8; }
+
+    .pg-stream-label {
+      padding: 4px 8px;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: #2e5a70;
+      border-top: 1px solid #0e2433;
+    }
+
+    /* domain notice */
+    .pg-domain-notice {
+      font-size: 10px;
+      color: #2e4a5a;
+      letter-spacing: 0.1em;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .pg-domain-notice em { color: #3a6a7a; font-style: normal; }
 
     .pg-star { position: absolute; background: #c8e6ff; border-radius: 50%; }
 
     /* ── disclaimer footer ── */
     .pg-disclaimer {
-      position: relative;
-      z-index: 2;
       width: 100%;
       max-width: 700px;
       margin: 0 auto;
@@ -310,9 +474,11 @@
     .pg-disclaimer p + p { margin-top: 0.5rem; }
     .pg-disclaimer em { color: #2e5060; font-style: normal; }
 
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
       .pg-grid { gap: 0.5rem; }
       .pg-store-btn { font-size: 10px; padding: 6px 12px; }
+      .pg-stream-grid.cols-2,
+      .pg-stream-grid.cols-3 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -320,6 +486,7 @@
   <div class="pg-wrap" id="pgWrap">
     <div class="pg-scanlines"></div>
     <div class="pg-inner">
+
       <div class="pg-eyebrow">Capcom &mdash; 2026</div>
       <div class="pg-title">PRAG<span>MATA</span></div>
 
@@ -329,10 +496,9 @@
       </div>
 
       <div class="pg-divider"></div>
-
       <div class="pg-since-label">Mission time elapsed</div>
 
-      <div class="pg-grid" id="pgGrid">
+      <div class="pg-grid">
         <div class="pg-unit">
           <div class="pg-box">
             <div class="pg-num-wrap">
@@ -380,39 +546,73 @@
       </div>
 
       <div class="pg-divider"></div>
-
       <div class="pg-stores-label">Get the game</div>
 
       <div class="pg-stores">
         <a class="pg-store-btn" href="https://store.playstation.com" target="_blank" rel="noopener">
-          <span class="pg-store-icon">⬡</span> PlayStation Store
+          <span>⬡</span> PlayStation Store
         </a>
         <a class="pg-store-btn" href="https://www.xbox.com/games" target="_blank" rel="noopener">
-          <span class="pg-store-icon">⬡</span> Xbox / Game Pass
+          <span>⬡</span> Xbox / Game Pass
         </a>
         <a class="pg-store-btn" href="https://store.steampowered.com" target="_blank" rel="noopener">
-          <span class="pg-store-icon">⬡</span> Steam
+          <span>⬡</span> Steam
         </a>
         <a class="pg-store-btn" href="https://www.nintendo.com/us/store/" target="_blank" rel="noopener">
-          <span class="pg-store-icon">⬡</span> Nintendo eShop
+          <span>⬡</span> Nintendo eShop
         </a>
       </div>
 
+      <div class="pg-divider"></div>
+
+    </div><!-- /pg-inner -->
+  </div><!-- /pg-wrap -->
+
+  <!-- streams section — wider than the main column -->
+  <div class="pg-streams-section" id="streamsSection">
+
+    <div class="pg-streams-header">
+      <div class="pg-streams-label">Live on Twitch</div>
     </div>
+
+    <!-- active channel pills -->
+    <div class="pg-channel-controls" id="channelPills"></div>
+
+    <!-- add a channel -->
+    <div class="pg-add-row">
+      <input class="pg-ch-input" id="chInput" type="text" placeholder="twitch channel name" maxlength="40" spellcheck="false" autocomplete="off" />
+      <button class="pg-add-btn" id="chAddBtn">+ Add</button>
+    </div>
+
+    <div class="pg-domain-notice">
+      Twitch embeds require the page to be served from a <em>real domain</em> — they will not load over <em>file://</em> or localhost.<br>
+      Host this file on GitHub Pages, Netlify, Vercel, or any web server for streams to appear.
+    </div>
+
+    <!-- stream grid -->
+    <div class="pg-stream-grid cols-1" id="streamGrid"></div>
+
   </div>
 
   <footer class="pg-disclaimer">
     <p>This is an unofficial fan-made page created out of excitement for Pragmata. It is not affiliated with, endorsed by, or produced in connection with Capcom Co., Ltd. in any way.</p>
-    <p><em>Pragmata is a trademark of Capcom Co., Ltd. All rights reserved.</em></p>
+    <p><em>Pragmata is a trademark of Capcom Co., Ltd. All rights reserved. Twitch is a trademark of Twitch Interactive, Inc. This page is not affiliated with Twitch.</em></p>
   </footer>
 
   <script>
     (function () {
+
+      /* ────────────────────────────────
+         DEFAULT CHANNELS
+         Replace these with real Pragmata
+         streamers once the game is live.
+      ──────────────────────────────── */
+      const DEFAULT_CHANNELS = ['pragmata', 'capcom'];
+
+      /* ── elapsed counter ── */
       const LAUNCH = new Date('2026-04-17T00:00:00');
-
-      const prev = { d: null, h: null, m: null, s: null };
-      const busy = { d: false, h: false, m: false, s: false };
-
+      const prev   = { d: null, h: null, m: null, s: null };
+      const busy   = { d: false, h: false, m: false, s: false };
       const elIds  = { d:'cDays', h:'cHrs',  m:'cMin',  s:'cSec'  };
       const chrIds = { d:'chr-d', h:'chr-h', m:'chr-m', s:'chr-s' };
       const chcIds = { d:'chc-d', h:'chc-h', m:'chc-m', s:'chc-s' };
@@ -435,30 +635,20 @@
       function onDigitChange(key, val) {
         if (busy[key]) return;
         busy[key] = true;
-
         const el  = document.getElementById(elIds[key]);
         const chr = document.getElementById(chrIds[key]);
         const chc = document.getElementById(chcIds[key]);
         const dur = 300 + Math.random() * 80;
-
         chr.textContent = val;
         chc.textContent = val;
-
-        el.style.animation  = '';
-        chr.style.animation = '';
-        chc.style.animation = '';
+        el.style.animation = chr.style.animation = chc.style.animation = '';
         reflow(el);
-
         setTimeout(() => { el.textContent = val; }, dur * 0.45);
-
         el.style.animation  = `digitChange ${dur}ms ease-in-out`;
         chr.style.animation = `chromaticRed ${dur}ms ease-in-out`;
         chc.style.animation = `chromaticCyan ${dur}ms ease-in-out`;
-
         setTimeout(() => {
-          el.style.animation  = '';
-          chr.style.animation = '';
-          chc.style.animation = '';
+          el.style.animation = chr.style.animation = chc.style.animation = '';
           el.textContent = val;
           busy[key] = false;
         }, dur + 30);
@@ -467,7 +657,7 @@
       function ambientFlicker() {
         const k = keys[Math.floor(Math.random() * keys.length)];
         if (busy[k] || prev[k] === null) return;
-        const el  = document.getElementById(elIds[k]);
+        const el = document.getElementById(elIds[k]);
         const dur = 100 + Math.random() * 120;
         el.style.animation = '';
         reflow(el);
@@ -475,38 +665,128 @@
         setTimeout(() => { el.style.animation = ''; }, dur + 20);
       }
 
-      function scheduleNext() {
-        setTimeout(() => { ambientFlicker(); scheduleNext(); }, 5000 + Math.random() * 9000);
+      function scheduleFlicker() {
+        setTimeout(() => { ambientFlicker(); scheduleFlicker(); }, 5000 + Math.random() * 9000);
       }
 
       function tick() {
-        const now  = new Date();
-        const elapsed = now - LAUNCH;
-
-        const d = pad(Math.floor(elapsed / 86400000));
-        const h = pad(Math.floor((elapsed % 86400000) / 3600000));
-        const m = pad(Math.floor((elapsed % 3600000) / 60000));
-        const s = pad(Math.floor((elapsed % 60000) / 1000));
-
-        const vals = { d, h, m, s };
-
+        const elapsed = new Date() - LAUNCH;
+        const vals = {
+          d: pad(Math.floor(elapsed / 86400000)),
+          h: pad(Math.floor((elapsed % 86400000) / 3600000)),
+          m: pad(Math.floor((elapsed % 3600000) / 60000)),
+          s: pad(Math.floor((elapsed % 60000) / 1000))
+        };
         for (const k of keys) {
           if (prev[k] !== vals[k]) {
             const first = prev[k] === null;
             prev[k] = vals[k];
-            if (first) {
-              document.getElementById(elIds[k]).textContent = vals[k];
-            } else {
-              onDigitChange(k, vals[k]);
-            }
+            if (first) document.getElementById(elIds[k]).textContent = vals[k];
+            else onDigitChange(k, vals[k]);
           }
         }
       }
 
+      /* ── stream management ── */
+      let channels = [...DEFAULT_CHANNELS];
+
+      function getParentDomain() {
+        try { return window.location.hostname || 'localhost'; } catch(e) { return 'localhost'; }
+      }
+
+      function buildEmbed(channel) {
+        const parent = getParentDomain();
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${parent}&autoplay=false&muted=true`;
+        iframe.allowFullscreen = true;
+        iframe.allow = 'autoplay; fullscreen';
+        return iframe;
+      }
+
+      function updateGridLayout() {
+        const grid = document.getElementById('streamGrid');
+        const n = channels.length;
+        grid.className = `pg-stream-grid cols-${Math.min(n, 3)}`;
+      }
+
+      function renderStreams() {
+        const grid = document.getElementById('streamGrid');
+        grid.innerHTML = '';
+        channels.forEach(ch => {
+          const tile  = document.createElement('div');
+          tile.className = 'pg-stream-tile';
+          tile.dataset.channel = ch;
+
+          const ratio = document.createElement('div');
+          ratio.className = 'pg-stream-ratio';
+          ratio.appendChild(buildEmbed(ch));
+
+          const closeBtn = document.createElement('button');
+          closeBtn.className = 'pg-stream-close';
+          closeBtn.textContent = '✕';
+          closeBtn.title = `Remove ${ch}`;
+          closeBtn.addEventListener('click', () => removeChannel(ch));
+          ratio.appendChild(closeBtn);
+
+          const label = document.createElement('div');
+          label.className = 'pg-stream-label';
+          label.textContent = ch;
+
+          tile.appendChild(ratio);
+          tile.appendChild(label);
+          grid.appendChild(tile);
+        });
+        updateGridLayout();
+      }
+
+      function renderPills() {
+        const pills = document.getElementById('channelPills');
+        pills.innerHTML = '';
+        channels.forEach(ch => {
+          const pill = document.createElement('button');
+          pill.className = 'pg-ch-pill active';
+          pill.innerHTML = `<span class="dot"></span>${ch}`;
+          pill.title = `Viewing ${ch}`;
+          pills.appendChild(pill);
+        });
+      }
+
+      function addChannel(name) {
+        const ch = name.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+        if (!ch || channels.includes(ch) || channels.length >= 6) return;
+        channels.push(ch);
+        renderPills();
+        renderStreams();
+      }
+
+      function removeChannel(ch) {
+        channels = channels.filter(c => c !== ch);
+        renderPills();
+        renderStreams();
+      }
+
+      /* add button */
+      document.getElementById('chAddBtn').addEventListener('click', () => {
+        const input = document.getElementById('chInput');
+        addChannel(input.value);
+        input.value = '';
+      });
+
+      document.getElementById('chInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          addChannel(e.target.value);
+          e.target.value = '';
+        }
+      });
+
+      /* init */
       addStars();
       tick();
       setInterval(tick, 1000);
-      scheduleNext();
+      scheduleFlicker();
+      renderPills();
+      renderStreams();
+
     })();
   </script>
 </body>
